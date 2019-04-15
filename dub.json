@@ -1,0 +1,13 @@
+{
+  "name": "aardvark",
+  "authors": [
+    "Liam Chasteen (mojofreem)"
+  ],
+  "targetType": "executable",
+  "dependencies": {
+    "derelict-sdl2": "~>2.1.4",
+    "derelict-gl3": "~>1.0.24"
+  },
+  "stringImportPaths": ["src/"],
+  "targetPath": "./out"
+}
