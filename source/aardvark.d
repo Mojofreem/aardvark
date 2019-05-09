@@ -9,6 +9,7 @@ import derelict.sdl2.net;
 
 import std.stdio;
 import std.string;
+import std.conv : to;
 
 enum eGLShaderType {
     eGLVertexShader=GL_VERTEX_SHADER,
@@ -33,7 +34,7 @@ bool createGLShader(uint* shader, string source, eGLShaderType type, char[] info
     int success;
     glGetShaderiv(id, GL_COMPILE_STATUS, &success);
     if(!success) {
-        glGetShaderInfoLog(id, infoLog.length, null, infoLog.ptr);
+        glGetShaderInfoLog(id, cast(uint)(infoLog.length), cast(int *)null, infoLog.ptr);
         glDeleteShader(id);
         return false;
     }
@@ -42,20 +43,24 @@ bool createGLShader(uint* shader, string source, eGLShaderType type, char[] info
 }
 
 void main() {
-    DerelictSDL2.load();
     DerelictGL3.load();
+    DerelictSDL2.load(SharedLibVersion(2, 0, 9));
     DerelictSDL2Image.load();
     DerelictSDL2Mixer.load();
     DerelictSDL2ttf.load();
     DerelictSDL2Net.load();
 
-    SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO);
+    if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)) {
+        writeln("ERROR: Failed to init SDL2");
+        return;
+    }
 
     SDL_Window *window;
     SDL_GLContext context;
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -63,10 +68,20 @@ void main() {
     window = SDL_CreateWindow("Aardvark", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if(!window) {
+        writeln("ERROR: Failed to create a window.");
         return;
     }
 
+    SDL_ShowWindow(window);
+
+    SDL_ClearError();
     context = SDL_GL_CreateContext(window);
+
+    if(!context) {
+        writeln("ERROR: Failed to obtain OpenGL context: ", to!string(SDL_GetError()));
+        return;
+    }
+
     DerelictGL3.reload();
 
     SDL_GL_SetSwapInterval(1);
@@ -161,7 +176,7 @@ void main() {
         SDL_GL_SwapWindow(window);
     }
 
-    SDL_GL_DeleteContext(context);
+    //SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }

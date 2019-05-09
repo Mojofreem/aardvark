@@ -3,11 +3,15 @@
   "authors": [
     "Liam Chasteen (mojofreem)"
   ],
+  "copyright": "Copyright © 2019, Liam Chasteen",
+  "description": "A minimal D application.",
+  "license": "proprietary",
   "targetType": "executable",
   "dependencies": {
     "derelict-sdl2": "~>2.1.4",
-    "derelict-gl3": "~>1.0.24"
+    "derelict-gl3": "~>1.0.24",
+    "derelict-util": "~>2.0.6"
   },
-  "stringImportPaths": ["src/"],
+  "stringImportPaths": ["./source"],
   "targetPath": "./out"
 }
